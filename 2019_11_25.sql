@@ -170,7 +170,7 @@ FROM dual;
 
 --MONTHS_BETWEEN (date1, date2)
 SELECT MONTHS_BETWEEN (TO_DATE('2019-11-25', 'YYYY-MM-DD'),
-                        TO_DATE('2019-03-25', 'YYYY-MM-DD')) m_bat,
+                        TO_DATE('2019-03-25', 'YYYY-MM-DD')) m_bat, --왜 반올림??
                         TO_DATE('2019-11-25', 'YYYY-MM-DD') - TO_DATE('2019-03-25', 'YYYY-MM-DD') d_m --두 날짜 사이의 일자수
 FROM dual;
 
