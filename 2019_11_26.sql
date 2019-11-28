@@ -188,4 +188,22 @@ SELECT empno, ename, job, sal,
         DECODE(job, 'SALESMAN', sal*1.05, 'MANAGER', sal * 1.10, 'PRESIDENT', sal * 1.20, sal) bonus
 FROM emp;
 
---144번, 155번 실습
+--144번
+SELECT empno, ename, deptno,
+        CASE
+            WHEN deptno = '10' THEN 'ACCOUNTING'
+            WHEN deptno = '20' THEN 'RESEARCH'
+            WHEN deptno = '30' THEN 'SALES'
+            WHEN deptno = '40' THEN 'OPERATIONS'
+            ELSE 'DDIT'
+        END DNAME
+FROM emp;
+
+--155번 실습
+SELECT empno, ename, TO_CHAR(hiredate, 'YY/MM/DD') hiredate,
+        CASE
+            WHEN MOD(TO_NUMBER(TO_CHAR(hiredate, 'YY')), 2) = 1
+            THEN '건강검진 대상자'
+            ELSE '건강검진 비대상자'
+        END CONTACT_TO_DOCTOR
+FROM emp;
