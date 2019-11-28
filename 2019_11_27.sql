@@ -210,8 +210,8 @@ FROM emp;
 
 UPDATE emp SET dname = CASE
                             WHEN deptno = 10 THEN 'ACCOUNTING'
-                            WHEN deptno = 10 THEN 'RESEARCH'
-                            WHEN deptno = 10 THEN 'SALES'
+                            WHEN deptno = 20 THEN 'RESEARCH'
+                            WHEN deptno = 30 THEN 'SALES'
                         END;
 COMMIT;
 
