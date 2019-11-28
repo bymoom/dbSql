@@ -173,3 +173,58 @@ SELECT TO_CHAR(hiredate, 'YYYY') hire_yyyy,
 FROM emp
 GROUP BY TO_CHAR(hiredate, 'YYYY');
 
+--실습 6
+--전체 직원수 구하기(emp)
+--전체 부서수 구하기(dept)
+SELECT  
+        count(*) cnt
+        FROM dept;
+
+--실습 7
+--직원 속한 부서의 개수 구하기
+SELECT COUNT(deptno)
+FROM
+(SELECT deptno
+FROM emp
+GROUP BY deptno);
+
+----
+
+SELECT COUNT(DISTINCT deptno)
+FROM emp;
+
+
+--JOIN
+--1. 테이블 구조변경(컬럼 추가)
+--2. 추가된 컬럼에 값을 update
+--dname 컬럼을 emp 테이블에 추가
+DESC emp;
+DESC dept;
+
+--컬럼추가(dname, VARCHAR2(14))
+ALTER TABLE emp ADD (dname VARCHAR2(14));
+DESC emp;
+
+SELECT *
+FROM emp;
+
+UPDATE emp SET dname = CASE
+                            WHEN deptno = 10 THEN 'ACCOUNTING'
+                            WHEN deptno = 10 THEN 'RESEARCH'
+                            WHEN deptno = 10 THEN 'SALES'
+                        END;
+COMMIT;
+
+SELECT empno, ename, deptno, dname
+FROM emp;
+
+-- SALES --> MARKET SALES
+-- 총 6건의 데이터 변경이 필요하다.
+-- 값의 중복이 있는 형태(반 정규형)
+UPDATE emp SET dname = 'MARKET SALES'
+WHERE dname = 'SALES';
+
+--emp 테이블, dept 테이블 조인
+SELECT ename, emp.deptno, dept.dname
+FROM emp, dept
+WHERE emp.deptno = dept.deptno;
