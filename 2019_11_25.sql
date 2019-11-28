@@ -141,12 +141,13 @@ FROM dual;
 
 --DATE 타입의 ROUND, TRUNC 적용
 SELECT TO_CHAR (SYSDATE, 'YYYY-MM-DD hh24:mi:ss') now,
-    --MM에서 반올림 (11월->1년)
+      --YY에서 반올림 (다음해 1월 1일로 반올림됨)
         TO_CHAR (ROUND(SYSDATE, 'YYYY'), 'YYYY-MM-DD hh24:mi:ss') now_YYYY,
-        --DD에서 반올림 (25일 -> 1개월)
-        TO_CHAR (ROUND(SYSDATE, 'MM'), 'YYYY-MM-DD hh24:mi:ss') now_DD,
-        --시간에서 반올림
+        --MM에서 반올림(다음달 1일로 반올림됨)
+        TO_CHAR (ROUND(SYSDATE, 'MM'), 'YYYY-MM-DD hh24:mi:ss') now_MM,
+        --DD에서 반올림
         TO_CHAR (ROUND(SYSDATE, 'DD'), 'YYYY-MM-DD hh24:mi:ss') now_DD 
+        --시간도 가능(안쓴것같음)
 FROM dual;
 
 
@@ -183,3 +184,5 @@ FROM dual;
 --NEXT_DAY(date, weekday number(1-7))
 SELECT NEXT_DAY(SYSDATE, 7) --오늘 날짜(2019/11/25)일 이후 등장하는 첫번쨰 토요일
 FROM dual;
+
+
