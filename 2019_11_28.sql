@@ -156,10 +156,15 @@ WHERE emp.deptno = dept.deptno
 AND emp.sal > 2500;
 
 --join0_3
-SELECT empno, ename, emp.sal, emp.deptno, dname
+SELECT empno, ename, sal, emp.deptno, dname
 FROM emp, dept
-WHERE emp.deptno = dept.deptno 
-AND emp.sal > 2500 AND emp.empno > 7600;
-
+WHERE emp.deptno = dept.deptno
+AND sal > 2500 AND empno > 7600;
 --(참고)BETWEEN은 WHERE과 꼭 붙어있어야한다
 
+--join0_4
+SELECT empno, ename, sal, emp.deptno, dname
+FROM emp, dept
+WHERE emp.deptno = dept.deptno
+AND dname = 'RESEARCH'
+AND sal > 2500 AND empno > 7600;
