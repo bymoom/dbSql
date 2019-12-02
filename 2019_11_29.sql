@@ -70,3 +70,5 @@ SELECT product.pid, product.pnm,
 FROM cycle, product
 WHERE product.pid = cycle.pid
 GROUP BY product.pid, product.pnm;
+SELECT *
+FROM cycle;
