@@ -100,7 +100,7 @@ AND prod.prod_id = buyprod.buy_prod(+);
 --ANSI
 SELECT TO_CHAR(buyprod.buy_date, 'YY/MM/DD') buy_date, buyprod.buy_prod, prod.prod_id, prod.prod_name, buyprod.buy_qty
 FROM buyprod RIGHT OUTER JOIN prod
-ON (buyprod.buy_date = TO_DATE('050125', 'YYMMDD')
+ON (buyprod.buy_date = TO_DATE('050125', 'YYMMDD') --TO_DATE(:yyymmdd, 'YYYYMMDD') -> 바인드변수
     AND prod.prod_id = buyprod.buy_prod);
 
 --outerjoin2
@@ -109,9 +109,9 @@ FROM buyprod RIGHT OUTER JOIN prod ON (buyprod.buy_prod = prod.prod_id)
 AND buy_date = TO_DATE('05/01/25', 'YY/MM/DD');
 
 --outerjoin3
-SELECT NVL(buy_date, '2005/01/25'), buy_prod, prod_id, prod_name, NVL (buy_qty, 0)
+SELECT NVL(TO_CHAR(buy_date, 'YY/MM/DD'), '05/01/25'), buy_prod, prod_id, prod_name, NVL (buy_qty, 0)
 FROM buyprod RIGHT JOIN prod ON (buyprod.buy_prod = prod.prod_id)
-AND buy_date = '2005/01/25';
+AND buy_date = TO_DATE('05/01/25', 'YY/MM/DD');
 
 --outerjoin4
 SELECT *
@@ -125,10 +125,11 @@ FROM cycle RIGHT OUTER JOIN product ON (cycle.pid = product.pid)
 AND cycle.cid = '1';
 
 --ORACLE
-SELECT product.pid, product.pnm, NVL(cycle.cid, 1) cid, NVL(cycle.day, 0) day, NVL(cycle.cnt, 0) cnt
+SELECT product.pid, product.pnm, NVL(cycle.cid, 1) cid, --('NVL(cycle.cid, 1) cid'대신 바인드변수 ':cid' 사용가능),
+        NVL(cycle.day, 0) day, NVL(cycle.cnt, 0) cnt
 FROM cycle, product
 WHERE cycle.pid(+) = product.pid
-AND cycle.cid(+) = '1';
+AND cycle.cid(+) = '1'; --('1'대신 바인드변수 ':cid' 사용가능)
 
 --outerjoin5
 SELECT product.pid, product.pnm, NVL(cycle.cid, 1) cid, NVL(customer.cnm, 'brown'), NVL(cycle.day, 0) day, NVL(cycle.cnt, 0) cnt
@@ -137,3 +138,51 @@ WHERE cycle.pid(+) = product.pid
 AND customer.cid(+) = cycle.cid
 AND cycle.cid(+) = '1'
 ORDER BY pid desc;
+
+--((product cycle(+)) customer(+) --인라인뷰 사용
+SELECT a.pid, a.pnm, a.cid, customer.cnm, a.day, a.cnt 
+FROM
+    (SELECT product.pid, product.pnm, :cid cid, --('NVL(cycle.cid, 1) cid'대신 바인드변수 ':cid' 사용가능),
+            NVL(cycle.day, 0) day, NVL(cycle.cnt, 0) cnt
+    FROM cycle, product
+    WHERE cycle.cid(+) = :cid
+    AND cycle.pid(+) = product.pid) a, customer
+WHERE a.cid = customer.cid; --('1'대신 바인드변수 ':cid' 사용가능)
+
+--crossjoin1
+--ORACLE
+SELECT cid, cnm, pid, pnm
+FROM customer, product;
+
+--ANSI
+SELECT cid, cnm, pid, pnm
+FROM customer CROSS JOIN product;
+
+--도시발전지수 --
+--도시발전지수가 높은 순으로 나열
+--도시발전지수 = (버거킹개수 + KFC 개수 + 맥도날드 개수) / 롯데리아 개수
+--순위 / 시도 / 시군구 / 도시발전지수(소수점 둘째 자리에서 반올림)
+-- 1  /서울특별시/서초구/7.5
+-- 2  /서울특별시/강남구/7.2
+
+--해당 시도, 시군구별 프렌차이즈별 건수가 필요
+SELECT ROWNUM rn, sido, sigungu, 도시발전지수
+FROM
+    (SELECT a.sido, a.sigungu, ROUND((a.cnt/b.cnt), 1) as 도시발전지수 --'a.cnt, b.cnt'는 조회후 뺐음
+    FROM
+        (SELECT sido, sigungu, COUNT(*) cnt --버거킹, KFC, 맥도날드 건수
+        FROM fastfood
+        WHERE gb IN('KFC', '버거킹', '맥도날드')
+        GROUP BY sido, sigungu) a,
+
+        (SELECT sido, sigungu, COUNT(*) cnt --롯데리아 건수
+        FROM fastfood
+        WHERE gb = '롯데리아'
+        GROUP BY sido, sigungu) b
+WHERE a.sido = b.sido
+AND a.sigungu = b.sigungu)
+ORDER BY 도시발전지수 DESC;
+
+
+SELECT *
+FROM TAX;
