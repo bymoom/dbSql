@@ -51,7 +51,7 @@ FROM
             WHERE a.sido = b.sido
             AND a.sigungu = b.sigungu)
             ORDER BY 도시발전지수 desc) c
-            ORDER BY rn)d,
+        ORDER BY rn)d,
             
             (SELECT ROWNUM rn, id, sido, sigungu, cal_sal
             FROM
@@ -184,13 +184,18 @@ WHERE sal <= ALL (SELECT sal --800, 1250 ('<='도 가능 : 800보다 크거나 같은 사원
 --관리자 역할을 하지 않는 사원 정보 조회
 --NOT IN 연산자 사용시 NULL이 데이터에 존재하지 않아야 정상동작한다(NULL이 있음 결과가 전혀 나오지 않기때문에 NVL로 값을 변경한다)
 SELECT *
+FROM emp
+WHERE empno NOT IN (SELECT mgr
+                    FROM emp); -->서브쿼리 mgr컬럼에 NULL값이 있기 때문에 결과가 안나온다
+
+SELECT *
 FROM emp --사원 정보 조회 --> 관리자 역할을 하지 않는 직원
 WHERE empno NOT IN (SELECT NVL(mgr, -1) --mgr컬럼에 절대 없을만한 값을 넣어야한다
                     FROM emp);
 
 SELECT *
 FROM emp --사원 정보 조회 --> 관리자 역할을 하지 않는 직원
-WHERE empno NOT IN (SELECT mgr --mgr컬럼에 절대 없을만한 값을 넣어야한다
+WHERE empno NOT IN (SELECT mgr
                     FROM emp
                     WHERE mgr IS NOT null);
                     
