@@ -166,23 +166,58 @@ FROM customer CROSS JOIN product;
 -- 2  /서울특별시/강남구/7.2
 
 --해당 시도, 시군구별 프렌차이즈별 건수가 필요
-SELECT ROWNUM rn, sido, sigungu, 도시발전지수
+SELECT ROWNUM rn, d.*
 FROM
-    (SELECT a.sido, a.sigungu, ROUND((a.cnt/b.cnt), 1) as 도시발전지수 --'a.cnt, b.cnt'는 조회후 뺐음
+    (SELECT sido, sigungu, 도시발전지수
     FROM
-        (SELECT sido, sigungu, COUNT(*) cnt --버거킹, KFC, 맥도날드 건수
-        FROM fastfood
-        WHERE gb IN('KFC', '버거킹', '맥도날드')
-        GROUP BY sido, sigungu) a,
+        (SELECT a.sido, a.sigungu, ROUND((a.cnt/b.cnt), 1) as 도시발전지수 --'a.cnt, b.cnt'는 조회후 뺐음
+        FROM
+            (SELECT sido, sigungu, COUNT(*) cnt --버거킹, KFC, 맥도날드 건수
+            FROM fastfood
+            WHERE gb IN('KFC', '버거킹', '맥도날드')
+            GROUP BY sido, sigungu) a,
 
-        (SELECT sido, sigungu, COUNT(*) cnt --롯데리아 건수
-        FROM fastfood
-        WHERE gb = '롯데리아'
-        GROUP BY sido, sigungu) b
-WHERE a.sido = b.sido
-AND a.sigungu = b.sigungu)
-ORDER BY 도시발전지수 DESC;
-
+            (SELECT sido, sigungu, COUNT(*) cnt --롯데리아 건수
+            FROM fastfood
+            WHERE gb = '롯데리아'
+            GROUP BY sido, sigungu) b
+        WHERE a.sido = b.sido
+        AND a.sigungu = b.sigungu) c
+    ORDER BY 도시발전지수 desc) d
+ORDER BY rn;
 
 SELECT *
+FROM fastfood;
+
+SELECT ROWNUM rn, d.*
+FROM
+        (SELECT sido, sigungu, 도시발전지수
+        FROM
+            (SELECT a.sido, a.sigungu, ROUND((a.cnt/b.cnt), 1) 도시발전지수
+            FROM
+                    (SELECT sido, sigungu, COUNT(*) cnt
+                    FROM fastfood
+                    WHERE gb IN ('맥도날드', '버거킹', 'KFC')
+                    GROUP BY sido, sigungu) a,
+                    
+                    (SELECT sido, sigungu, COUNT(*) cnt
+                    FROM fastfood
+                    WHERE gb = '롯데리아'
+                    GROUP BY sido, sigungu) b
+            WHERE a.sido = b.sido
+            AND a.sigungu = b.sigungu) c
+        ORDER BY 도시발전지수 desc) d
+ORDER BY rn;
+
+--1. tax 테이블을 이용 시도/시군구별 인당 연말정산 신고액 구하기
+--2. 신고액이 많은 순서로 랭킹 부여하기
+--랭킹, 시도, 시군구, 인당연말정산 신고액
+SELECT *
 FROM TAX;
+
+SELECT ROWNUM rn, a.*
+FROM
+    (SELECT sido, sigungu, ROUND((sal/people), 1) sal
+    FROM tax
+    ORDER BY sal desc) a
+ORDER BY rn;
