@@ -225,3 +225,45 @@ DROP INDEX idx_u_dept_test_01;
 DROP INDEX idx_u_dept_test_02;
 DROP INDEX idx_u_dept_test_03;
 
+
+--idx3
+explain plan for
+SELECT *
+FROM emp
+WHERE empno = :empno;
+
+select *
+from table(dbms_xplan.display);
+
+explain plan for
+select deptno, TO_CHAR(hiredate, 'yyyymm'), count(*) cnt
+from emp
+group by deptno, TO_CHAR(hiredate, 'yyyymm');
+
+
+CREATE INDEX idx_n_emp_05 ON emp (sal);
+
+drop index idx_n_emp_05;
+CREATE INDEX idx_n_emp_05 ON emp (deptno);
+
+EXPLAIN PLAN FOR
+SELECT *
+FROM EMP a, emp b
+WHERE a.mgr = b.empno
+AND a.deptno = 20;
+
+explain plan for
+select *
+from emp, dept
+where emp.deptno = dept.deptno
+and emp.deptno = 20
+and emp.empno like '77%';
+
+--alter table dept disable constraint pk_dept;
+
+select *
+from emp;
+
+create unique index idx_emp_u_01 on emp (empno);
+create index idx_emp_n_01 emp (deptno);
+
