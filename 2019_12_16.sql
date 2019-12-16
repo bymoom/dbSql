@@ -119,7 +119,7 @@ MERGE INTO emp_test a
 USING (SELECT deptno, ROUND(AVG(sal), 2) avg_sal
        FROM emp_test
        GROUP BY deptno) b
-ON ( a.deptno = b.deptno)
+ON ( a.deptno = b.deptno )
 WHEN MATCHED THEN
     UPDATE SET sal = sal + 200
 WHERE a.sal < b.avg_sal; --(ON절에 기술한 컬럼은 업데이트할 수 없기때문에 where 절 사용)
