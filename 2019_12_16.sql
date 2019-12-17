@@ -135,5 +135,6 @@ WHEN MATCHED THEN
                         WHEN a.sal < b.avg_sal THEN sal + 200
                         ELSE sal
                     END;
-                    
-                    
+
+select *
+from dept;
