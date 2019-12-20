@@ -94,6 +94,44 @@ FROM dual;
 
 
 ---------------------------------과제----------------------------------
+--201910 : 35, 첫주의 일요일 : 20190929, 마지막주의 토요일 : 20191102
+SELECT ldt-fdt+1
+FROM
+(SELECT LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) dt, --마지막날짜
+        LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) + 
+        7 - TO_CHAR(LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')), 'D') ldt, --마지막요일은 5일때, 7을 구하는식
+        TO_DATE(:yyyymm, 'yyyymm') -
+        (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) fdt--첫주 첫째날 요일에서 앞에 날짜들을 구하는식
+FROM dual);
+
+
+-- 12.18일까지 과제
+
+SELECT
+    MAX(DECODE(d, 1, dt)) 일, MAX(DECODE(d, 2, dt)) 월, MAX(DECODE(d, 3, dt)) 화,
+    MAX(DECODE(d, 4, dt)) 수, MAX(DECODE(d, 5, dt)) 목, MAX(DECODE(d, 6, dt)) 금, MAX(DECODE(d, 7, dt)) 토
+FROM
+    (SELECT 
+            TO_DATE(:yyyymm, 'yyyymm') -
+            (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) + (LEVEL - 1) dt,
+            TO_CHAR(TO_DATE(:yyyymm, 'yyyymm') -
+        (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) + (LEVEL - 1), 'D') d,
+            TO_CHAR(TO_DATE(:yyyymm, 'yyyymm') -
+        (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) + (LEVEL), 'IW') iw
+    FROM dual
+    CONNECT BY LEVEL <= (SELECT ldt-fdt+1
+                        FROM
+                        (SELECT LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) dt, --마지막날짜
+                                LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) + 
+                                7 - TO_CHAR(LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')), 'D') ldt, --마지막요일은 5일때, 7을 구하는식
+                                TO_DATE(:yyyymm, 'yyyymm') -
+                                (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) fdt--첫주 첫째날 요일에서 앞에 날짜들을 구하는식
+                        FROM dual)))
+    GROUP BY dt - (d - 1)
+    ORDER BY dt - (d - 1);
+
+
+
 SELECT /* DECODE(d, 1, iw+1, iw) iw, --대신 iw level에서 -1을 제거*/
        MAX(DECODE(d, 1, dt)) sun, MAX(DECODE(d, 2, dt)) mon, MAX(DECODE(d, 3, dt)) tue, MAX(DECODE(d, 4, dt)) wen,
        MAX(DECODE(d, 5, dt)) thu, MAX(DECODE(d, 6, dt)) fri, MAX(DECODE(d, 7, dt)) sat
@@ -104,7 +142,14 @@ FROM
             TO_CHAR(TO_DATE(:yyyymm, 'YYYYMM') + (level -1), 'D') d, --요일
             TO_CHAR(TO_DATE(:yyyymm, 'YYYYMM') + (level), 'IW') iw
     FROM dual
-    CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')), 'DD'))
+    CONNECT BY LEVEL <= (SELECT ldt-fdt+1
+                            FROM
+                            (SELECT LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) dt, --마지막날짜
+                                    LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')) + 
+                                    7 - TO_CHAR(LAST_DAY(TO_DATE(:yyyymm, 'yyyymm')), 'D') ldt, --마지막요일은 5일때, 7을 구하는식
+                                    TO_DATE(:yyyymm, 'yyyymm') -
+                                    (TO_CHAR(TO_DATE(:yyyymm, 'yyyymm'), 'D') -1) fdt--첫주 첫째날 요일에서 앞에 날짜들을 구하는식
+                            FROM dual))
 GROUP BY iw
 ORDER BY sat;
 ---------------------------------과제----------------------------------
