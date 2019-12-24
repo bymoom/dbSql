@@ -134,18 +134,17 @@ EXEC printemp(7369);
 
 
 CREATE OR REPLACE PROCEDURE registdept_test
-(p_deptno IN dept_test.deptno%TYPE, p_dname IN dept_test.dname%TYPE, p_loc IN dept_test.loc%TYPE)
-IS deptno dept_test.deptno%TYPE;
-    dname dept_test.dname%TYPE;
-    loc dept_test.loc%TYPE;
+(p_deptno IN dept.deptno%TYPE, p_dname IN dept.dname%TYPE, p_loc IN dept.loc%TYPE)
+IS deptno dept.deptno%TYPE;
+    dname dept.dname%TYPE;
+    loc dept.loc%TYPE;
 BEGIN
     INSERT INTO dept_test (deptno, dname, loc) VALUES (p_deptno, p_dname, p_loc);
-
+    COMMIT;
 END;
 /
 
 EXEC registdept_test(99, 'ddit', 'daejeon');
 
-COMMIT;
 SELECT *
 FROM dept_test;
